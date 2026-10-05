@@ -91,12 +91,32 @@ namespace AppInsegura
         }
 
         private static void Registrar()
+        private static void Registrar()
         {
             Console.Write("Nombre de usuario: ");
             string nombre = Console.ReadLine() ?? "";
             Console.Write("Contraseña: ");
             string contrasena = Console.ReadLine() ?? "";
 
+            if (contrasena.Length < 6 || contrasena.Length > 20)
+            {
+                Console.WriteLine("La contraseña debe tener entre 8 y 20 caracteres.");
+                return;
+            }
+
+            bool tieneMayuscula = false;
+            for (int i = 0; i < contrasena.Length; i++)
+            {
+                if (char.IsUpper(contrasena[i]))
+                {
+                tieneMayuscula = true;
+                }
+            }
+            if (!tieneMayuscula)
+            {
+                Console.WriteLine("La contraseña debe contener al menos una mayúscula.");
+                return;
+            }
             Usuario nuevo = auth.Registrar(nombre, contrasena);
             Console.WriteLine($"Usuario '{nuevo.Nombre}' registrado con rol '{nuevo.Rol}'.");
         }
