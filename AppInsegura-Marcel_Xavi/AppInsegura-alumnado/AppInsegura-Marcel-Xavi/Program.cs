@@ -94,7 +94,12 @@ namespace AppInsegura
 {
     Console.Write("Nombre de usuario: ");
     string nombre = Console.ReadLine() ?? "";
-
+           
+    if (nombre.Length < 4 || nombre.Length > 20)
+{
+    Console.WriteLine("El nombre de usuario debe tener entre 4 y 20 caracteres.");
+    return;
+}
     Console.Write("Correo electrónico: ");
     string correo = Console.ReadLine() ?? "";
 
