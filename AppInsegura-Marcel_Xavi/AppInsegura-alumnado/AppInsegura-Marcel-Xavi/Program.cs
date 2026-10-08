@@ -90,36 +90,62 @@ namespace AppInsegura
             Console.Write("Elige una opción: ");
         }
 
-        private static void Registrar()
-        private static void Registrar()
+       private static void Registrar()
+{
+    Console.Write("Nombre de usuario: ");
+    string nombre = Console.ReadLine() ?? "";
+
+    Console.Write("Correo electrónico: ");
+    string correo = Console.ReadLine() ?? "";
+
+    if (!correo.Contains("@") || !correo.Contains("."))
+    {
+        Console.WriteLine("El correo electrónico no es válido.");
+        return;
+    }
+
+    string contrasena = "";
+    bool contrasenaValida = false;
+    int intentos = 0;
+
+    while (!contrasenaValida && intentos < 3)
+    {
+        Console.Write("Contraseña (entre 8 y 20 caracteres y una mayúscula): ");
+        contrasena = Console.ReadLine() ?? "";
+
+        bool tieneMayuscula = false;
+
+        for (int i = 0; i < contrasena.Length; i++)
         {
-            Console.Write("Nombre de usuario: ");
-            string nombre = Console.ReadLine() ?? "";
-            Console.Write("Contraseña: ");
-            string contrasena = Console.ReadLine() ?? "";
-
-            if (contrasena.Length < 6 || contrasena.Length > 20)
+            if (char.IsUpper(contrasena[i]))
             {
-                Console.WriteLine("La contraseña debe tener entre 8 y 20 caracteres.");
-                return;
-            }
-
-            bool tieneMayuscula = false;
-            for (int i = 0; i < contrasena.Length; i++)
-            {
-                if (char.IsUpper(contrasena[i]))
-                {
                 tieneMayuscula = true;
-                }
             }
-            if (!tieneMayuscula)
-            {
-                Console.WriteLine("La contraseña debe contener al menos una mayúscula.");
-                return;
-            }
-            Usuario nuevo = auth.Registrar(nombre, contrasena);
-            Console.WriteLine($"Usuario '{nuevo.Nombre}' registrado con rol '{nuevo.Rol}'.");
         }
+
+        if (contrasena.Length >= 8 &&
+            contrasena.Length <= 20 &&
+            tieneMayuscula)
+        {
+            contrasenaValida = true;
+        }
+        else
+        {
+            intentos++;
+            Console.WriteLine("Contraseña no válida. Debe tener entre 8 y 20 caracteres y una mayúscula.");
+            Console.WriteLine("Intentos restantes: " + (3 - intentos));
+        }
+    }
+
+    if (!contrasenaValida)
+    {
+        Console.WriteLine("Has agotado los 3 intentos. Registro cancelado.");
+        return;
+    }
+
+    Usuario nuevo = auth.Registrar(nombre, contrasena);
+    Console.WriteLine($"Usuario '{nuevo.Nombre}' registrado con rol '{nuevo.Rol}'.");
+}
 
         private static void IniciarSesion()
         {
