@@ -20,9 +20,11 @@ namespace AppInsegura
             Console.WriteLine();
 
             bool salir = false;
+
             while (!salir)
             {
                 MostrarMenu();
+
                 string opcion = Console.ReadLine() ?? "";
 
                 try
@@ -32,24 +34,31 @@ namespace AppInsegura
                         case "1":
                             Registrar();
                             break;
+
                         case "2":
                             IniciarSesion();
                             break;
+
                         case "3":
                             BuscarUsuario();
                             break;
+
                         case "4":
                             VerPerfil();
                             break;
+
                         case "5":
                             PanelAdministracion();
                             break;
+
                         case "6":
                             SincronizarConServidor();
                             break;
+
                         case "0":
                             salir = true;
                             break;
+
                         default:
                             Console.WriteLine("Opción no válida.");
                             break;
@@ -76,17 +85,24 @@ namespace AppInsegura
         private static void MostrarMenu()
         {
             Console.WriteLine("------------------------------------");
-            Console.WriteLine($"Usuario actual: {(usuarioActual != null ? usuarioActual.Nombre : "ninguno")}");
+
+            Console.WriteLine(
+                $"Usuario actual: {(usuarioActual != null ? usuarioActual.Nombre : "ninguno")}"
+            );
+
             Console.WriteLine("1. Registrar usuario");
             Console.WriteLine("2. Iniciar sesión");
             Console.WriteLine("3. Buscar usuario por nombre");
             Console.WriteLine("4. Ver mi perfil");
+
             if (usuarioActual != null && usuarioActual.Rol == "admin")
             {
                 Console.WriteLine("5. Panel de administración");
             }
+
             Console.WriteLine("6. Sincronizar partida con el servidor");
             Console.WriteLine("0. Salir");
+
             Console.Write("Elige una opción: ");
         }
 
@@ -94,6 +110,18 @@ namespace AppInsegura
         {
             Console.Write("Nombre de usuario: ");
             string nombre = Console.ReadLine() ?? "";
+
+            if (nombre.Contains(" "))
+            {
+                Console.WriteLine("El nombre de usuario no puede contener espacios.");
+                return;
+            }
+
+            if (nombre.Length < 4 || nombre.Length > 20)
+            {
+                Console.WriteLine("El nombre de usuario debe tener entre 4 y 20 caracteres.");
+                return;
+            }
 
             Console.Write("Correo electrónico: ");
             string correo = Console.ReadLine() ?? "";
@@ -111,6 +139,8 @@ namespace AppInsegura
             while (!contrasenaValida && intentos < 3)
             {
                 Console.Write("Contraseña (entre 8 y 20 caracteres y una mayúscula): ");
+
+                // La contraseña se oculta con *
                 contrasena = LeerContrasenaOculta();
 
                 bool tieneMayuscula = false;
@@ -132,8 +162,14 @@ namespace AppInsegura
                 else
                 {
                     intentos++;
-                    Console.WriteLine("Contraseña no válida. Debe tener entre 8 y 20 caracteres y una mayúscula.");
-                    Console.WriteLine("Intentos restantes: " + (3 - intentos));
+
+                    Console.WriteLine(
+                        "Contraseña no válida. Debe tener entre 8 y 20 caracteres y una mayúscula."
+                    );
+
+                    Console.WriteLine(
+                        "Intentos restantes: " + (3 - intentos)
+                    );
                 }
             }
 
@@ -144,17 +180,24 @@ namespace AppInsegura
             }
 
             Usuario nuevo = auth.Registrar(nombre, contrasena);
-            Console.WriteLine($"Usuario '{nuevo.Nombre}' registrado con rol '{nuevo.Rol}'.");
+
+            Console.WriteLine(
+                $"Usuario '{nuevo.Nombre}' registrado con rol '{nuevo.Rol}'."
+            );
         }
 
         private static void IniciarSesion()
         {
             Console.Write("Nombre de usuario: ");
             string nombre = Console.ReadLine() ?? "";
+
             Console.Write("Contraseña: ");
+
+            // La contraseña se oculta con *
             string contrasena = LeerContrasenaOculta();
 
             Usuario? usuario = auth.IniciarSesion(nombre, contrasena);
+
             if (usuario == null)
             {
                 Console.WriteLine("Usuario o contraseña incorrectos.");
@@ -162,6 +205,7 @@ namespace AppInsegura
             }
 
             usuarioActual = usuario;
+
             Console.WriteLine($"Bienvenido, {usuario.Nombre}.");
         }
 
@@ -171,9 +215,12 @@ namespace AppInsegura
             string nombre = Console.ReadLine() ?? "";
 
             Usuario? encontrado = baseDatos.BuscarPorNombre(nombre);
-            Console.WriteLine(encontrado != null
-                ? $"Encontrado: {encontrado.Nombre} (rol: {encontrado.Rol})"
-                : "No se ha encontrado ningún usuario con ese nombre.");
+
+            Console.WriteLine(
+                encontrado != null
+                    ? $"Encontrado: {encontrado.Nombre} (rol: {encontrado.Rol})"
+                    : "No se ha encontrado ningún usuario con ese nombre."
+            );
         }
 
         private static void VerPerfil()
@@ -194,12 +241,16 @@ namespace AppInsegura
             // Verificación de autorización en la lógica de negocio
             if (usuarioActual == null || usuarioActual.Rol != "admin")
             {
-                Console.WriteLine("Acceso denegado. No tienes permisos de administrador.");
+                Console.WriteLine(
+                    "Acceso denegado. No tienes permisos de administrador."
+                );
+
                 return;
             }
 
             Console.WriteLine("=== PANEL DE ADMINISTRACIÓN ===");
             Console.WriteLine("Lista de usuarios registrados:");
+
             foreach (Usuario u in baseDatos.ListarTodos())
             {
                 Console.WriteLine($" - {u.Nombre} ({u.Rol})");
@@ -215,9 +266,11 @@ namespace AppInsegura
             }
 
             var red = new RedService();
+
             red.EnviarPuntuacion(usuarioActual.Nombre, 1000);
         }
 
+        // FUNCIÓN PARA OCULTAR LA CONTRASEÑA
         private static string LeerContrasenaOculta()
         {
             string pass = "";
@@ -238,6 +291,7 @@ namespace AppInsegura
             }
 
             Console.WriteLine();
+
             return pass;
         }
     }
