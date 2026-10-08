@@ -190,15 +190,21 @@ namespace AppInsegura
         }
 
         private static void PanelAdministracion()
-        {
-            Console.WriteLine("=== PANEL DE ADMINISTRACIÓN ===");
-            Console.WriteLine("Lista de usuarios registrados:");
-            foreach (Usuario u in baseDatos.ListarTodos())
-            {
-                Console.WriteLine($" - {u.Nombre} ({u.Rol})");
-            }
-        }
+{
+    // Verificación de autorización en la lógica de negocio
+            if (usuarioActual == null || usuarioActual.Rol != "admin")
+    {
+        Console.WriteLine("Acceso denegado. No tienes permisos de administrador.");
+                return;
+    }
 
+    Console.WriteLine("=== PANEL DE ADMINISTRACIÓN ===");
+    Console.WriteLine("Lista de usuarios registrados:");
+    foreach (Usuario u in baseDatos.ListarTodos())
+    {
+        Console.WriteLine($" - {u.Nombre} ({u.Rol})");
+    }
+}
         private static void SincronizarConServidor()
         {
             if (usuarioActual == null)
