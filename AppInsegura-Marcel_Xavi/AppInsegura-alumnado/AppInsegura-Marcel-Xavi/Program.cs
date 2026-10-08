@@ -90,74 +90,69 @@ namespace AppInsegura
             Console.Write("Elige una opción: ");
         }
 
-       private static void Registrar()
-{
-    Console.Write("Nombre de usuario: ");
-    string nombre = Console.ReadLine() ?? "";
-           
-    if (nombre.Length < 4 || nombre.Length > 20)
-{
-    Console.WriteLine("El nombre de usuario debe tener entre 4 y 20 caracteres.");
-    return;
-}
-    Console.Write("Correo electrónico: ");
-    string correo = Console.ReadLine() ?? "";
-
-    if (!correo.Contains("@") || !correo.Contains("."))
-    {
-        Console.WriteLine("El correo electrónico no es válido.");
-        return;
-    }
-
-    string contrasena = "";
-    bool contrasenaValida = false;
-    int intentos = 0;
-
-    while (!contrasenaValida && intentos < 3)
-    {
-        Console.Write("Contraseña (entre 8 y 20 caracteres y una mayúscula): ");
-        contrasena = Console.ReadLine() ?? "";
-
-        bool tieneMayuscula = false;
-
-        for (int i = 0; i < contrasena.Length; i++)
+        private static void Registrar()
         {
-            if (char.IsUpper(contrasena[i]))
+            Console.Write("Nombre de usuario: ");
+            string nombre = Console.ReadLine() ?? "";
+
+            Console.Write("Correo electrónico: ");
+            string correo = Console.ReadLine() ?? "";
+
+            if (!correo.Contains("@") || !correo.Contains("."))
             {
-                tieneMayuscula = true;
+                Console.WriteLine("El correo electrónico no es válido.");
+                return;
             }
-        }
 
-        if (contrasena.Length >= 8 &&
-            contrasena.Length <= 20 &&
-            tieneMayuscula)
-        {
-            contrasenaValida = true;
-        }
-        else
-        {
-            intentos++;
-            Console.WriteLine("Contraseña no válida. Debe tener entre 8 y 20 caracteres y una mayúscula.");
-            Console.WriteLine("Intentos restantes: " + (3 - intentos));
-        }
-    }
+            string contrasena = "";
+            bool contrasenaValida = false;
+            int intentos = 0;
 
-    if (!contrasenaValida)
-    {
-        Console.WriteLine("Has agotado los 3 intentos. Registro cancelado.");
-        return;
-    }
+            while (!contrasenaValida && intentos < 3)
+            {
+                Console.Write("Contraseña (entre 8 y 20 caracteres y una mayúscula): ");
+                contrasena = LeerContrasenaOculta();
 
-    Usuario nuevo = auth.Registrar(nombre, contrasena);
-    Console.WriteLine($"Usuario '{nuevo.Nombre}' registrado con rol '{nuevo.Rol}'.");
-}
+                bool tieneMayuscula = false;
+
+                for (int i = 0; i < contrasena.Length; i++)
+                {
+                    if (char.IsUpper(contrasena[i]))
+                    {
+                        tieneMayuscula = true;
+                    }
+                }
+
+                if (contrasena.Length >= 8 &&
+                    contrasena.Length <= 20 &&
+                    tieneMayuscula)
+                {
+                    contrasenaValida = true;
+                }
+                else
+                {
+                    intentos++;
+                    Console.WriteLine("Contraseña no válida. Debe tener entre 8 y 20 caracteres y una mayúscula.");
+                    Console.WriteLine("Intentos restantes: " + (3 - intentos));
+                }
+            }
+
+            if (!contrasenaValida)
+            {
+                Console.WriteLine("Has agotado los 3 intentos. Registro cancelado.");
+                return;
+            }
+
+            Usuario nuevo = auth.Registrar(nombre, contrasena);
+            Console.WriteLine($"Usuario '{nuevo.Nombre}' registrado con rol '{nuevo.Rol}'.");
+        }
 
         private static void IniciarSesion()
         {
             Console.Write("Nombre de usuario: ");
             string nombre = Console.ReadLine() ?? "";
             Console.Write("Contraseña: ");
-            string contrasena = Console.ReadLine() ?? "";
+            string contrasena = LeerContrasenaOculta();
 
             Usuario? usuario = auth.IniciarSesion(nombre, contrasena);
             if (usuario == null)
@@ -195,21 +190,22 @@ namespace AppInsegura
         }
 
         private static void PanelAdministracion()
-{
-    // Verificación de autorización en la lógica de negocio
+        {
+            // Verificación de autorización en la lógica de negocio
             if (usuarioActual == null || usuarioActual.Rol != "admin")
-    {
-        Console.WriteLine("Acceso denegado. No tienes permisos de administrador.");
+            {
+                Console.WriteLine("Acceso denegado. No tienes permisos de administrador.");
                 return;
-    }
+            }
 
-    Console.WriteLine("=== PANEL DE ADMINISTRACIÓN ===");
-    Console.WriteLine("Lista de usuarios registrados:");
-    foreach (Usuario u in baseDatos.ListarTodos())
-    {
-        Console.WriteLine($" - {u.Nombre} ({u.Rol})");
-    }
-}
+            Console.WriteLine("=== PANEL DE ADMINISTRACIÓN ===");
+            Console.WriteLine("Lista de usuarios registrados:");
+            foreach (Usuario u in baseDatos.ListarTodos())
+            {
+                Console.WriteLine($" - {u.Nombre} ({u.Rol})");
+            }
+        }
+
         private static void SincronizarConServidor()
         {
             if (usuarioActual == null)
@@ -220,6 +216,29 @@ namespace AppInsegura
 
             var red = new RedService();
             red.EnviarPuntuacion(usuarioActual.Nombre, 1000);
+        }
+
+        private static string LeerContrasenaOculta()
+        {
+            string pass = "";
+            ConsoleKeyInfo key;
+
+            while ((key = Console.ReadKey(true)).Key != ConsoleKey.Enter)
+            {
+                if (key.Key == ConsoleKey.Backspace && pass.Length > 0)
+                {
+                    pass = pass[..^1];
+                    Console.Write("\b \b");
+                }
+                else if (!char.IsControl(key.KeyChar))
+                {
+                    pass += key.KeyChar;
+                    Console.Write("*");
+                }
+            }
+
+            Console.WriteLine();
+            return pass;
         }
     }
 }
