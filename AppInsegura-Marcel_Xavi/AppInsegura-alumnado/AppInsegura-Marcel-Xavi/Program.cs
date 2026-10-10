@@ -16,7 +16,6 @@ namespace AppInsegura
             CargarUsuariosDeEjemplo();
 
             Console.WriteLine("=== Gestor de Usuarios y Partidas ===");
-            Console.WriteLine("(usuarios de prueba: admin/admin1234, ana/ana2024)");
             Console.WriteLine();
 
             bool salir = false;
