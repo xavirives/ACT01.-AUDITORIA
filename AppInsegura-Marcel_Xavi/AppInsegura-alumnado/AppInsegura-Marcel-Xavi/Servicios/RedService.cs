@@ -6,8 +6,7 @@ namespace AppInsegura.Servicios
 {
     public class RedService
     {
-        private const string ApiKey = "sk_live_51Hj29aKlmZ9QwErTyUiOpAsDfGh";
-        private const string UrlServidor = "http://api.miapp-insegura.local/puntuaciones";
+        private const string UrlServidor = "https://api.miapp-insegura.local/puntuaciones";
 
         public void EnviarPuntuacion(string nombreUsuario, int puntuacion)
         {
@@ -22,14 +21,19 @@ namespace AppInsegura.Servicios
             }
         }
 
-        private async Task EnviarPuntuacionAsync(string nombreUsuario, int puntuacion)
-        {
-            using var cliente = new HttpClient();
-            string url = $"{UrlServidor}?usuario={nombreUsuario}&puntos={puntuacion}&api_key={ApiKey}";
+private async Task EnviarPuntuacionAsync(string nombreUsuario, int puntuacion)
+{
+    using var cliente = new HttpClient();
 
-            Console.WriteLine($"Enviando puntuación a: {url}");
-            HttpResponseMessage respuesta = await cliente.GetAsync(url);
-            Console.WriteLine($"Respuesta del servidor: {(int)respuesta.StatusCode}");
-        }
+    var datos = new FormUrlEncodedContent(new[]
+    {
+        new KeyValuePair<string, string>("usuario", nombreUsuario),
+        new KeyValuePair<string, string>("puntos", puntuacion.ToString())
+    });
+
+    Console.WriteLine($"Enviando puntuación a: {UrlServidor}");
+    HttpResponseMessage respuesta = await cliente.PostAsync(UrlServidor, datos);
+    Console.WriteLine($"Respuesta del servidor: {(int)respuesta.StatusCode}");
+}
     }
 }
