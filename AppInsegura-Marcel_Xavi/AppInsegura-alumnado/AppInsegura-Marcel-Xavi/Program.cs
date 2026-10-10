@@ -143,6 +143,13 @@ namespace AppInsegura
                 // La contraseña se oculta con *
                 contrasena = LeerContrasenaOculta();
 
+                if (contrasena.Contains(" "))
+            {
+                Console.WriteLine("No se permiten espacios.");
+                intentos++;
+                continue;
+            }
+
                 bool tieneMayuscula = false;
 
                 for (int i = 0; i < contrasena.Length; i++)
