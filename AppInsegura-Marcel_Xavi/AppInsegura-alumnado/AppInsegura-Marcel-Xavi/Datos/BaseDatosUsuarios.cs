@@ -29,8 +29,7 @@ namespace AppInsegura.Datos
 
         public Usuario? BuscarPorNombre(string nombreBuscado)
         {
-            string consulta = $"SELECT * FROM usuarios WHERE nombre = '{nombreBuscado}'";
-            return EjecutarConsultaSimulada(consulta);
+        return usuarios.FirstOrDefault(u => u.Nombre == nombreBuscado);
         }
 
         // Simulación simplificada de un motor de consultas, únicamente para
