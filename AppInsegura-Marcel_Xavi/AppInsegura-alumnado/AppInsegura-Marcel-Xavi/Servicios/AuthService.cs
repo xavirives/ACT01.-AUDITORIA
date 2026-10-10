@@ -55,9 +55,9 @@ namespace AppInsegura.Servicios
 
         private string CalcularHash(string contrasena)
         {
-            using MD5 md5 = MD5.Create();
-            byte[] bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(contrasena));
-            return Convert.ToHexString(bytes);
+        using SHA256 sha256 = SHA256.Create();
+        byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(contrasena));
+        return Convert.ToHexString(bytes);
         }
 
         private string GenerarTokenSesion()
